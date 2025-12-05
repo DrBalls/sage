@@ -175,8 +175,8 @@ Sage packages these ideas into a single, non-intrusive layer that sits on top of
 **Review agent support**
 
 - ✅ OpenAI models – **Finished**
-- 🔄 Anthropic models – **In progress**
-- ⏳ Gemini models – **Not started**
+- ✅ Anthropic models – **Finished**
+- ✅ Gemini models – **Finished**
 - ⏳ Open source models – **Not started**
 
 ---
@@ -216,6 +216,20 @@ Sage packages these ideas into a single, non-intrusive layer that sits on top of
 - Run `codex` and sign in with your ChatGPT account
 - Or set `CODEX_API_KEY` environment variable
 
+**Using Anthropic models**
+
+To use Anthropic Claude models as the review agent:
+1. Set `ANTHROPIC_API_KEY` environment variable with your API key
+2. Run Sage and press `S` to open settings
+3. Select a Claude model from the Anthropic section
+
+**Using Gemini models**
+
+To use Google Gemini models as the review agent:
+1. Set `GOOGLE_API_KEY` or `GEMINI_API_KEY` environment variable with your API key
+2. Run Sage and press `S` to open settings
+3. Select a Gemini model from the Google section
+
 ---
 
 ### Architecture
@@ -223,7 +237,9 @@ Sage packages these ideas into a single, non-intrusive layer that sits on top of
 Sage uses:
 
 - **React + Ink** - Terminal UI framework
-- **OpenAI Codex SDK** - AI agent for code review
+- **OpenAI Codex SDK** - AI agent for code review (default provider)
+- **Anthropic SDK** - Alternative AI agent provider (Claude models)
+- **Google Generative AI SDK** - Alternative AI agent provider (Gemini models)
 - **Claude Code hooks** - Session lifecycle + prompt metadata
 - **Claude JSONL transcripts** - Source of truth for conversation turns
 - **Chokidar** - File watching for continuous mode

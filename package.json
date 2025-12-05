@@ -37,6 +37,8 @@
   },
   "homepage": "https://github.com/usetig/sage#readme",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.1",
+    "@google/generative-ai": "^0.24.1",
     "@openai/codex-sdk": "^0.48.0",
     "chokidar": "^3.6.0",
     "ink": "^6.3.1",

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 import type { Key } from 'ink';
-import { AVAILABLE_MODELS, type ModelConfig } from '../lib/models.js';
+import { AVAILABLE_MODELS, OPENAI_MODELS, ANTHROPIC_MODELS, GEMINI_MODELS, type ModelConfig } from '../lib/models.js';
 
 interface SettingsScreenProps {
   currentModel: string;
@@ -10,6 +10,13 @@ interface SettingsScreenProps {
   onToggleDebugMode: () => void;
   onBack: () => void;
 }
+
+// Group models by provider for display
+const MODEL_GROUPS: { name: string; models: ModelConfig[] }[] = [
+  { name: 'OpenAI (Codex)', models: OPENAI_MODELS },
+  { name: 'Anthropic (Claude)', models: ANTHROPIC_MODELS },
+  { name: 'Google (Gemini)', models: GEMINI_MODELS },
+];
 
 // Total selectable items: models + 1 debug toggle
 const DEBUG_TOGGLE_INDEX = AVAILABLE_MODELS.length;
@@ -47,22 +54,37 @@ export function SettingsScreen({ currentModel, debugMode, onSelectModel, onToggl
     }
   });
 
+  // Calculate the starting index for each provider group
+  let modelIndex = 0;
+
   return (
     <Box flexDirection="column" marginTop={1}>
       <Text bold>Settings</Text>
       <Text>{'─'.repeat(40)}</Text>
 
       <Box marginTop={1} flexDirection="column">
-        <Text>Select Sage Model:</Text>
+        <Text>Select Review Agent Model:</Text>
         <Box marginTop={1} flexDirection="column">
-          {AVAILABLE_MODELS.map((model, index) => (
-            <ModelRow
-              key={model.id}
-              model={model}
-              isSelected={index === selectedIndex}
-              isCurrent={model.id === currentModel}
-            />
-          ))}
+          {MODEL_GROUPS.map((group) => {
+            const groupStartIndex = modelIndex;
+            modelIndex += group.models.length;
+            return (
+              <Box key={group.name} flexDirection="column" marginBottom={1}>
+                <Text dimColor>{group.name}</Text>
+                {group.models.map((model, idx) => {
+                  const absoluteIndex = groupStartIndex + idx;
+                  return (
+                    <ModelRow
+                      key={model.id}
+                      model={model}
+                      isSelected={absoluteIndex === selectedIndex}
+                      isCurrent={model.id === currentModel}
+                    />
+                  );
+                })}
+              </Box>
+            );
+          })}
         </Box>
       </Box>
 
