@@ -1,6 +1,9 @@
 import type { TurnSummary } from '../jsonl.js';
 import type { InitialReviewContext, FollowupReviewContext, PromptPayload } from './types.js';
 
+/** Width of the formatted conversation turn boxes in characters */
+const TURN_BOX_WIDTH = 80;
+
 export const CRITIQUE_SCHEMA = {
   type: 'object',
   properties: {
@@ -189,24 +192,22 @@ export function buildFollowupPromptPayload(
 }
 
 export function formatTurnsForPrompt(turns: TurnSummary[]): string {
-  const BOX_WIDTH = 80;
-
   return turns
     .map((turn, index) => {
       const turnLabel = `Turn ${index + 1}`;
-      const topBorderFill = BOX_WIDTH - 5 - turnLabel.length;
-      const userPromptPadding = BOX_WIDTH - 3 - 'USER PROMPT'.length;
-      const claudeResponsePadding = BOX_WIDTH - 3 - 'CLAUDE RESPONSE'.length;
+      const topBorderFill = TURN_BOX_WIDTH - 5 - turnLabel.length;
+      const userPromptPadding = TURN_BOX_WIDTH - 3 - 'USER PROMPT'.length;
+      const claudeResponsePadding = TURN_BOX_WIDTH - 3 - 'CLAUDE RESPONSE'.length;
 
       const pieces = [
         `+-  ${turnLabel} ${'-'.repeat(Math.max(0, topBorderFill))}+`,
         '| USER PROMPT' + ' '.repeat(userPromptPadding) + '|',
-        '+' + '-'.repeat(BOX_WIDTH - 2) + '+',
+        '+' + '-'.repeat(TURN_BOX_WIDTH - 2) + '+',
         turn.user,
         '',
-        '+' + '-'.repeat(BOX_WIDTH - 2) + '+',
+        '+' + '-'.repeat(TURN_BOX_WIDTH - 2) + '+',
         '| CLAUDE RESPONSE' + ' '.repeat(claudeResponsePadding) + '|',
-        '+' + '-'.repeat(BOX_WIDTH - 2) + '+',
+        '+' + '-'.repeat(TURN_BOX_WIDTH - 2) + '+',
         turn.agent ?? '(Claude has not responded yet)',
         turn.isPartial
           ? '[Captured while Claude was still responding - content may be incomplete.]'
