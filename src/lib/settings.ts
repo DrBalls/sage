@@ -1,15 +1,18 @@
 import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
-import { DEFAULT_MODEL } from './models.js';
+import { DEFAULT_MODEL, DEFAULT_PROVIDER } from './models.js';
+import type { AgentProviderType } from './agents/types.js';
 
 export interface SageSettings {
   selectedModel: string;
+  selectedProvider: AgentProviderType;
   debugMode: boolean;
 }
 
 const DEFAULT_SETTINGS: SageSettings = {
   selectedModel: DEFAULT_MODEL,
+  selectedProvider: DEFAULT_PROVIDER,
   debugMode: false,
 };
 

@@ -32,7 +32,8 @@ import { SettingsScreen } from './SettingsScreen.js';
 import { getQueueDir } from '../lib/paths.js';
 import { ensureHooksConfigured } from '../scripts/configureHooks.js';
 import { loadSettings, saveSettings } from '../lib/settings.js';
-import { DEFAULT_MODEL } from '../lib/models.js';
+import { DEFAULT_MODEL, DEFAULT_PROVIDER, getProviderForModel } from '../lib/models.js';
+import type { AgentProviderType } from '../lib/agents/types.js';
 
 type Screen = 'loading' | 'error' | 'session-list' | 'running' | 'chat' | 'settings';
 
@@ -99,8 +100,9 @@ export default function App() {
   const [hooksJustConfigured, setHooksJustConfigured] = useState(false);
   const [hookConfigWarning, setHookConfigWarning] = useState<string | null>(null);
 
-  // Model selection state
+  // Model and provider selection state
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL);
+  const [selectedProvider, setSelectedProvider] = useState<AgentProviderType>(DEFAULT_PROVIDER);
 
   // Debug mode state
   const [debugMode, setDebugMode] = useState(false);
@@ -136,6 +138,7 @@ export default function App() {
       try {
         const settings = await loadSettings();
         setSelectedModel(settings.selectedModel);
+        setSelectedProvider(settings.selectedProvider);
         setDebugMode(settings.debugMode);
         debugModeRef.current = settings.debugMode;
       } catch {
@@ -591,8 +594,11 @@ export default function App() {
 
   async function handleModelSelect(modelId: string) {
     setSelectedModel(modelId);
+    // Auto-update provider based on the selected model
+    const newProvider = getProviderForModel(modelId);
+    setSelectedProvider(newProvider);
     try {
-      await saveSettings({ selectedModel: modelId, debugMode });
+      await saveSettings({ selectedModel: modelId, selectedProvider: newProvider, debugMode });
     } catch {
       // Ignore save errors - settings are still applied for this session
     }
@@ -604,7 +610,7 @@ export default function App() {
     setDebugMode(newValue);
     debugModeRef.current = newValue;
     try {
-      await saveSettings({ selectedModel, debugMode: newValue });
+      await saveSettings({ selectedModel, selectedProvider, debugMode: newValue });
     } catch {
       // Ignore save errors - settings are still applied for this session
     }
@@ -1136,7 +1142,7 @@ export default function App() {
                 <Text color="yellow">⚠ {hookConfigWarning}</Text>
               )}
               <Box marginBottom={1}>
-                <Text dimColor>Model: {selectedModel}</Text>
+                <Text dimColor>Model: {selectedModel} ({selectedProvider})</Text>
               </Box>
               <Text>Select a Claude session to review:</Text>
               <Box flexDirection="column" marginTop={1}>
